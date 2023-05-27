@@ -21,7 +21,8 @@ all : $(NAME)
 bonus : $(BONUS_NAME)
 
 SRCS := \
-	philo.c
+	philo.c \
+	ft_putstr_fd.c \
 
 OBJS := \
 	$(SRCS:.c=.o)

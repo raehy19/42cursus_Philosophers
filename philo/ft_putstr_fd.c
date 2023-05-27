@@ -1,25 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
+/*   ft_putstr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rjeong <rjeong@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/17 19:42:14 by rjeong            #+#    #+#             */
-/*   Updated: 2023/05/17 19:42:18 by rjeong           ###   ########.fr       */
+/*   Created: 2022/07/11 17:22:11 by rjeong            #+#    #+#             */
+/*   Updated: 2023/05/28 04:54:52 by rjeong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILO_H
-# define PHILO_H
+#include <unistd.h>
 
-# include <stdio.h>
-# include <unistd.h>
-# include <sys/time.h>
-# include <stdlib.h>
-# include <string.h>
-# include <pthread.h>
+void	ft_putstr_fd(char *s, int fd)
+{
+	size_t	i;
 
-void	ft_putstr_fd(char *s, int fd);
-
-#endif
+	i = 0;
+	while (*(s + i))
+	{
+		write(fd, (s + i), 1);
+		++i;
+	}
+	return ;
+}

@@ -10,9 +10,20 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "philo.h"
+
+int	ft_arg_err(void)
+{
+	ft_putstr_fd("Please Check Program Arguments\n", STDERR_FILENO);
+	return(-1);
+}
+
 int	main(int argc, char **argv)
 {
-	(void )argc;
-	(void )argv;
-	return (0);
+	if (argc == 5 || argc == 6)
+	{
+		(void )argv;
+		return (0);
+	}
+	return (ft_arg_err());
 }
