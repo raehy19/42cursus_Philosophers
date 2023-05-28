@@ -113,6 +113,16 @@ void	print_state(t_shared *shared, t_philo *philo, char *state)
 	pthread_mutex_unlock(&shared->sim.lock);
 }
 
+void	act_delay(long long int	time)
+{
+	long long int	temp;
+
+	temp = get_time();
+	while (get_time() - temp < time)
+		;
+}
+
+
 void	act_eat(t_shared *shared, t_philo *philo)
 {
 	pthread_mutex_lock(&philo->death_time.lock);
@@ -134,7 +144,7 @@ void	act_eat(t_shared *shared, t_philo *philo)
 		}
 		pthread_mutex_unlock(&shared->full_philo_cnt.lock);
 	}
-	usleep(philo->info->time_to_eat * 1000);
+	act_delay(philo->info->time_to_eat);
 }
 
 
@@ -169,6 +179,13 @@ void	act_take_fork_right(t_shared *shared, t_philo *philo)
 	pthread_mutex_unlock(&(shared->forks + philo->left_fork_id)->lock);
 }
 
+void	act_sleep_and_think(t_shared *shared, t_philo *philo)
+{
+	print_state(shared, philo, STATE_SLEEP);
+	act_delay(philo->info->time_to_sleep);
+	print_state(shared, philo, STATE_THINK);
+}
+
 void	*philo_act(void *arg)
 {
 	t_philo	*philo;
@@ -181,6 +198,7 @@ void	*philo_act(void *arg)
 		while (1)
 		{
 			act_take_fork_left(&(philo->info->shared), philo);
+			act_sleep_and_think(&(philo->info->shared), philo);
 		}
 	}
 	else
@@ -189,6 +207,7 @@ void	*philo_act(void *arg)
 		while (1)
 		{
 			act_take_fork_right(&(philo->info->shared), philo);
+			act_sleep_and_think(&(philo->info->shared), philo);
 		}
 	}
 	return (0);
