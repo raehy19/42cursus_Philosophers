@@ -96,13 +96,14 @@ typedef struct s_philo
 	unsigned int	id;
 	unsigned int	left_fork_id;
 	unsigned int	right_fork_id;
-	unsigned int	ate_cnt;
+	int				ate_cnt;
 	t_death_time	death_time;
 }	t_philo;
 
 int		ft_atoi(const char *str);
 void	*ft_calloc(size_t count, size_t size);
 void	ft_putstr_fd(char *s, int fd);
-long long int	ft_get_time(void);
+long long int	get_time(void);
+long long int	get_timestamp(long long int start_time);
 
 #endif

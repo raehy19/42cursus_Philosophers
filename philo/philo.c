@@ -36,8 +36,8 @@ int	init_info(t_info *info)
 	info->shared.forks = calloc(info->number_of_philosophers, sizeof(t_fork));
 	if (!info->shared.forks)
 		return (ERR_MALLOC);
-	i = 0;
-	while (i < info->number_of_philosophers)
+	i = -1;
+	while (++i < info->number_of_philosophers)
 	{
 		(info->shared.forks + i)->fork_status = FREE;
 		if (pthread_mutex_init(&(info->shared.forks + i)->lock, NULL))
@@ -49,7 +49,7 @@ int	init_info(t_info *info)
 		|| pthread_mutex_init(&(info->shared.full_philo_cnt.lock), NULL)
 		|| pthread_mutex_init(&(info->shared.print_lock), NULL))
 		return (ERR_MUTEX_INIT);
-	info->start_time = ft_get_time() + START_DELAY;
+	info->start_time = get_time() + START_DELAY;
 	return (0);
 }
 
@@ -100,13 +100,58 @@ int	destroy_n_free(t_info *info, t_philo *philos, int exit_code)
 	return (exit_code);
 }
 
+void	print_state(t_shared *shared, t_philo *philo, char *state)
+{
+	pthread_mutex_lock(&shared->sim.lock);
+	if (shared->sim.sim_status == ON)
+	{
+		pthread_mutex_lock(&shared->print_lock);
+		printf("%lld\t\t%d %s",
+			get_timestamp(philo->info->start_time), philo->id, state);
+		pthread_mutex_unlock(&shared->print_lock);
+	}
+	pthread_mutex_unlock(&shared->sim.lock);
+}
+
+void	eat(t_shared *shared, t_philo *philo)
+{
+	pthread_mutex_lock(&(shared->forks + philo->left_fork_id)->lock);
+	(shared->forks + philo->left_fork_id)->fork_status = USING;
+	print_state(shared, philo, STATE_TAKE);
+	pthread_mutex_lock(&(shared->forks + philo->right_fork_id)->lock);
+	(shared->forks + philo->right_fork_id)->fork_status = USING;
+	print_state(shared, philo, STATE_TAKE);
+	pthread_mutex_lock(&philo->death_time.lock);
+	philo->death_time.death_time = get_time() + philo->info->time_to_die;
+	pthread_mutex_unlock(&philo->death_time.lock);
+	print_state(shared, philo, STATE_EAT);
+	++philo->ate_cnt;
+	if (philo->ate_cnt
+		== philo->info->number_of_times_each_philosopher_must_eat)
+	{
+		pthread_mutex_lock(&shared->full_philo_cnt.lock);
+		++shared->full_philo_cnt.full_philo_cnt;
+		pthread_mutex_unlock(&shared->full_philo_cnt.lock);
+	}
+	usleep(philo->info->time_to_eat * 1000);
+	(shared->forks + philo->left_fork_id)->fork_status = FREE;
+	pthread_mutex_unlock(&(shared->forks + philo->left_fork_id)->lock);
+	(shared->forks + philo->right_fork_id)->fork_status = FREE;
+	pthread_mutex_unlock(&(shared->forks + philo->right_fork_id)->lock);
+}
+
 void	*philo_act(void *arg)
 {
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
+	while (get_time() < philo->info->start_time)
+		;
 	while (1)
 	{
+		eat(&(philo->info->shared), philo);
+
+		usleep(100);
 
 	}
 	return (0);
@@ -125,6 +170,7 @@ int	simulate(t_info	*info, t_philo *philos)
 			return (ERR_THREAD_CREATE);
 	}
 	// monitoring
+	while(1);
 	return (0);
 }
 
