@@ -12,8 +12,6 @@
 
 #include "philo.h"
 
-#include "stdio.h"
-
 int	ft_arg_err(void)
 {
 	ft_putstr_fd("Please Check Program Arguments\n", STDERR_FILENO);
@@ -62,6 +60,7 @@ int	init_philos(t_info *info, t_philo *philos)
 	i = 0;
 	while (i < info->number_of_philosophers)
 	{
+		(philos + i)->thread_id = 0;
 		(philos + i)->info = info;
 		(philos + i)->id = i + 1;
 		(philos + i)->left_fork_id = i + 1;
@@ -76,7 +75,7 @@ int	init_philos(t_info *info, t_philo *philos)
 	return (0);
 }
 
-int	destroy_n_free(t_info *info, t_philo *philos)
+int	destroy_n_free(t_info *info, t_philo *philos, int exit_code)
 {
 	int	i;
 
@@ -95,27 +94,44 @@ int	destroy_n_free(t_info *info, t_philo *philos)
 		i = -1;
 		while (++i < info->number_of_philosophers)
 			pthread_mutex_destroy(&(philos + i)->death_time.lock);
+		pthread_join((philos + i)->thread_id, NULL);
 	}
 	free(philos);
-	return (ERR_INIT);
+	return (exit_code);
 }
 
-int	simulate(t_info	*info)
+void	*philo_act(void *arg)
 {
-	t_philo	*philos;
+	t_philo	*philo;
 
-	philos = ft_calloc(info->number_of_philosophers, sizeof(t_philo));
-	if (!philos)
-		return (ERR_MALLOC);
+	philo = (t_philo *)arg;
+	while (1)
+	{
+
+	}
+	return (0);
+}
+
+int	simulate(t_info	*info, t_philo *philos)
+{
+	int		i;
+
 	if (init_info(info) || init_philos(info, philos))
-		return (destroy_n_free(info,philos));
-
+		return (destroy_n_free(info, philos, ERR_INIT));
+	i = -1;
+	while (++i < info->number_of_philosophers)
+	{
+		if (pthread_create(&philos->thread_id, NULL, philo_act, (philos + i)))
+			return (ERR_THREAD_CREATE);
+	}
+	// monitoring
 	return (0);
 }
 
 int	main(int argc, char **argv)
 {
 	static t_info	info;
+	t_philo			*philos;
 
 	if (argc != 5 && argc != 6)
 		return (ft_arg_err());
@@ -127,7 +143,10 @@ int	main(int argc, char **argv)
 		info.number_of_times_each_philosopher_must_eat = ft_atoi(*(argv + 5));
 	if (ft_check_arg(argc, &info))
 		return (ft_arg_err());
+	philos = ft_calloc(info.number_of_philosophers, sizeof(t_philo));
+	if (!philos)
+		return (ERR_MALLOC);
 
 	printf("%d %d %d %d %d\n",info.number_of_philosophers, info.time_to_die, info.time_to_eat, info.time_to_sleep, info.number_of_times_each_philosopher_must_eat);
-	return (0);
+	return (destroy_n_free(&info, philos, simulate(&info, philos)));
 }

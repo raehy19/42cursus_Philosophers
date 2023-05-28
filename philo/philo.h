@@ -19,12 +19,14 @@
 # include <string.h>
 # include <pthread.h>
 
-# define START_DELAY	500
+# define START_DELAY		500
 
-# define ERR_ARG		4
-# define ERR_INIT		5
-# define ERR_MALLOC		6
-# define ERR_MUTEX_INIT	7
+# define ERR_ARG			4
+# define ERR_INIT			5
+# define ERR_MALLOC			6
+# define ERR_MUTEX_INIT		7
+# define ERR_THREAD_CREATE	8
+
 
 # define STATE_TAKE		"has taken a fork\n"
 # define STATE_EAT		"is eating\n"
