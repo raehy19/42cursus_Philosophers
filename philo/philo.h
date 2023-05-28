@@ -19,6 +19,13 @@
 # include <string.h>
 # include <pthread.h>
 
+# define START_DELAY	500
+
+# define ERR_ARG		4
+# define ERR_INIT		5
+# define ERR_MALLOC		6
+# define ERR_MUTEX_INIT	7
+
 # define STATE_TAKE		"has taken a fork\n"
 # define STATE_EAT		"is eating\n"
 # define STATE_SLEEP	"is sleeping\n"
@@ -74,6 +81,12 @@ typedef struct s_info
 	t_shared		shared;
 }	t_info;
 
+typedef struct s_death_time
+{
+	pthread_mutex_t	lock;
+	long long int	death_time;
+}	t_death_time;
+
 typedef struct s_philo
 {
 	pthread_t		thread_id;
@@ -82,10 +95,12 @@ typedef struct s_philo
 	unsigned int	left_fork_id;
 	unsigned int	right_fork_id;
 	unsigned int	ate_cnt;
-	long long int	time_to_die;
+	t_death_time	death_time;
 }	t_philo;
 
 int		ft_atoi(const char *str);
+void	*ft_calloc(size_t count, size_t size);
 void	ft_putstr_fd(char *s, int fd);
+long long int	ft_get_time(void);
 
 #endif

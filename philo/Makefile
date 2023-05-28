@@ -24,6 +24,8 @@ SRCS := \
 	philo.c \
 	ft_putstr_fd.c \
 	ft_atoi.c \
+	ft_calloc.c \
+	ft_get_time.c \
 
 OBJS := \
 	$(SRCS:.c=.o)
