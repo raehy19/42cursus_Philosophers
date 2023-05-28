@@ -122,7 +122,6 @@ void	act_delay(long long int	time)
 		;
 }
 
-
 void	act_eat(t_shared *shared, t_philo *philo)
 {
 	pthread_mutex_lock(&philo->death_time.lock);
@@ -184,6 +183,7 @@ void	act_sleep_and_think(t_shared *shared, t_philo *philo)
 	print_state(shared, philo, STATE_SLEEP);
 	act_delay(philo->info->time_to_sleep);
 	print_state(shared, philo, STATE_THINK);
+	usleep(200);
 }
 
 void	*philo_act(void *arg)
@@ -195,6 +195,7 @@ void	*philo_act(void *arg)
 		;
 	if (philo->id % 2)
 	{
+		usleep(200);
 		while (1)
 		{
 			act_take_fork_left(&(philo->info->shared), philo);
@@ -203,7 +204,6 @@ void	*philo_act(void *arg)
 	}
 	else
 	{
-
 		while (1)
 		{
 			act_take_fork_right(&(philo->info->shared), philo);
@@ -211,6 +211,42 @@ void	*philo_act(void *arg)
 		}
 	}
 	return (0);
+}
+
+t_sim_status	check_sim_status(t_shared *shared)
+{
+	t_sim_status	status;
+	pthread_mutex_lock(&(shared->sim.lock));
+	status = shared->sim.sim_status;
+	pthread_mutex_unlock(&(shared->sim.lock));
+	return (status);
+}
+
+void	monitor(t_shared *shared, t_philo *philos)
+{
+	int		i;
+
+	i = 0;
+	while (1)
+	{
+		if (check_sim_status(shared) == OFF)
+			break ;
+		pthread_mutex_lock(&(philos + i)->death_time.lock);
+		if (get_time() > (philos + i)->death_time.death_time)
+		{
+			pthread_mutex_lock(&(shared->sim.lock));
+			shared->sim.sim_status = OFF;
+			pthread_mutex_lock(&shared->print_lock);
+			printf("%lld\t\t%d %s",
+				   get_timestamp(philos->info->start_time), i + 1, STATE_DIED);
+			pthread_mutex_unlock(&shared->print_lock);
+			pthread_mutex_unlock(&(shared->sim.lock));
+		}
+		pthread_mutex_unlock(&(philos + i)->death_time.lock);
+		++i;
+		if (i == philos->info->number_of_philosophers)
+			i = 0;
+	}
 }
 
 int	simulate(t_info	*info, t_philo *philos)
@@ -226,7 +262,7 @@ int	simulate(t_info	*info, t_philo *philos)
 			return (ERR_THREAD_CREATE);
 	}
 	// monitoring
-	while(1);
+	monitor(&info->shared, philos);
 	return (0);
 }
 
@@ -248,7 +284,5 @@ int	main(int argc, char **argv)
 	philos = ft_calloc(info.number_of_philosophers, sizeof(t_philo));
 	if (!philos)
 		return (ERR_MALLOC);
-
-	printf("%d %d %d %d %d\n",info.number_of_philosophers, info.time_to_die, info.time_to_eat, info.time_to_sleep, info.number_of_times_each_philosopher_must_eat);
 	return (destroy_n_free(&info, philos, simulate(&info, philos)));
 }
