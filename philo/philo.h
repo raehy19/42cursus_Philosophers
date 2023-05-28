@@ -15,10 +15,53 @@
 
 # include <stdio.h>
 # include <unistd.h>
-# include <sys/time.h>
 # include <stdlib.h>
 # include <string.h>
 # include <pthread.h>
+
+# define STATE_TAKE		"has taken a fork\n"
+# define STATE_EAT		"is eating\n"
+# define STATE_SLEEP	"is sleeping\n"
+# define STATE_THINK	"is thinking\n"
+# define STATE_DIED		"died\n"
+
+typedef enum e_fork_status
+{
+	FREE,
+	USING
+}	t_fork_status;
+
+typedef struct s_fork
+{
+	pthread_mutex_t	lock;
+	t_fork_status	fork_status;
+}	t_fork;
+
+typedef enum e_sim_status
+{
+	ON,
+	OFF
+}	t_sim_status;
+
+typedef struct s_sim
+{
+	pthread_mutex_t	lock;
+	t_sim_status	sim_status;
+}	t_sim;
+
+typedef struct s_full_philo_cnt
+{
+	pthread_mutex_t	lock;
+	int				full_philo_cnt;
+}	t_full_philo_cnt;
+
+typedef struct s_shared
+{
+	t_fork				*forks;
+	t_sim				sim;
+	t_full_philo_cnt	full_philo_cnt;
+	pthread_mutex_t		print_lock;
+}	t_shared;
 
 typedef struct s_info
 {
@@ -27,7 +70,20 @@ typedef struct s_info
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				number_of_times_each_philosopher_must_eat;
+	long long int	start_time;
+	t_shared		shared;
 }	t_info;
+
+typedef struct s_philo
+{
+	pthread_t		thread_id;
+	t_info			*info;
+	unsigned int	id;
+	unsigned int	left_fork_id;
+	unsigned int	right_fork_id;
+	unsigned int	ate_cnt;
+	long long int	time_to_die;
+}	t_philo;
 
 int		ft_atoi(const char *str);
 void	ft_putstr_fd(char *s, int fd);
