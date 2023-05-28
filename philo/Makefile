@@ -23,6 +23,7 @@ bonus : $(BONUS_NAME)
 SRCS := \
 	philo.c \
 	ft_putstr_fd.c \
+	ft_atoi.c \
 
 OBJS := \
 	$(SRCS:.c=.o)
@@ -48,4 +49,4 @@ $(NAME) : $(OBJS)
 %.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-.PHONY : all bonus clean fclean re
+.PHONY : all bonus clean fclean re $(NAME)
