@@ -13,17 +13,19 @@
 NAME := philo
 
 CC := cc
-CFLAGS := -Wall -Wextra -Werror -MMD -MP
+CFLAGS := -Wall -Wextra -Werror -MMD -MP -O2
 RM := rm -f
 
 all : $(NAME)
 
 SRCS := \
 	philo.c \
+	parse.c \
+	init.c \
+	time.c \
 	ft_putstr_fd.c \
 	ft_atoi.c \
 	ft_calloc.c \
-	time.c \
 
 OBJS := \
 	$(SRCS:.c=.o)

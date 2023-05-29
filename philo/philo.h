@@ -100,10 +100,20 @@ typedef struct s_philo
 	t_death_time	death_time;
 }	t_philo;
 
-int		ft_atoi(const char *str);
-void	*ft_calloc(size_t count, size_t size);
-void	ft_putstr_fd(char *s, int fd);
+// utils
+int				ft_atoi(const char *str);
+void			*ft_calloc(size_t count, size_t size);
+void			ft_putstr_fd(char *s, int fd);
 long long int	get_time(void);
 long long int	get_timestamp(long long int start_time);
+
+// parse
+int				ft_arg_err(void);
+int				ft_check_arg(int argc, t_info *info);
+
+// init
+int				init_info(t_info *info);
+int				init_philos(t_info *info, t_philo *philos);
+
 
 #endif
