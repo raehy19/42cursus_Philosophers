@@ -46,8 +46,9 @@ int	init_philos(t_info *info, t_philo *philos)
 		(philos + i)->thread_id = 0;
 		(philos + i)->info = info;
 		(philos + i)->id = i + 1;
-		(philos + i)->left_fork_id = i + 1;
-		(philos + i)->right_fork_id = i;
+		if (i + 1 < info->number_of_philosophers)
+			(philos + i)->left_fork = &(info->shared.forks[i + 1]);
+		(philos + i)->right_fork = &(info->shared.forks[i]);
 		(philos + i)->ate_cnt = 0;
 		(philos + i)->death_time.death_time
 			= info->start_time + info->time_to_die;
@@ -55,6 +56,6 @@ int	init_philos(t_info *info, t_philo *philos)
 			return (ERR_MUTEX_INIT);
 		++i;
 	}
-	(philos + --i)->left_fork_id = 0;
+	(philos + --i)->left_fork = &(info->shared.forks[0]);
 	return (0);
 }

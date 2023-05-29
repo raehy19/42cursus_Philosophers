@@ -36,13 +36,16 @@ void	print_state(t_shared *shared, t_philo *philo, char *state)
 	pthread_mutex_lock(&shared->sim.lock);
 	if (shared->sim.sim_status == ON)
 	{
+		pthread_mutex_lock(&(philo->death_time.lock));
 		if (get_time() > philo->death_time.death_time)
 		{
 			print_death(shared, philo);
 			shared->sim.sim_status = OFF;
 			pthread_mutex_unlock(&shared->sim.lock);
+			pthread_mutex_unlock(&(philo->death_time.lock));
 			return ;
 		}
+		pthread_mutex_unlock(&(philo->death_time.lock));
 		pthread_mutex_lock(&shared->print_lock);
 		printf("%lld\t\t%d %s",
 			get_timestamp(philo->info->start_time), philo->id, state);

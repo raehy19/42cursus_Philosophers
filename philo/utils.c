@@ -34,6 +34,12 @@ int	destroy_n_free(t_info *info, t_philo *philos, int exit_code)
 {
 	int	i;
 
+	if (philos)
+	{
+		i = -1;
+		while (++i < info->number_of_philosophers)
+			pthread_join((philos + i)->thread_id, NULL);
+	}
 	if (info->shared.forks)
 	{
 		i = -1;
@@ -48,8 +54,9 @@ int	destroy_n_free(t_info *info, t_philo *philos, int exit_code)
 	{
 		i = -1;
 		while (++i < info->number_of_philosophers)
+		{
 			pthread_mutex_destroy(&(philos + i)->death_time.lock);
-		pthread_join((philos + i)->thread_id, NULL);
+		}
 	}
 	free(philos);
 	return (exit_code);

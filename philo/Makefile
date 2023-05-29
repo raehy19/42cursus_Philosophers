@@ -13,7 +13,7 @@
 NAME := philo
 
 CC := cc
-CFLAGS := -Wall -Wextra -Werror -MMD -MP -O2
+CFLAGS := -Wall -Wextra -Werror -MMD -MP -O2 -fsanitize=thread -g
 RM := rm -f
 
 all : $(NAME)
@@ -48,7 +48,7 @@ re : fclean
 	make all
 
 $(NAME) : $(OBJS)
-	$(CC) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@
 
 %.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@

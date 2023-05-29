@@ -93,8 +93,8 @@ typedef struct s_philo
 	pthread_t		thread_id;
 	t_info			*info;
 	unsigned int	id;
-	unsigned int	left_fork_id;
-	unsigned int	right_fork_id;
+	t_fork			*left_fork;
+	t_fork			*right_fork;
 	int				ate_cnt;
 	t_death_time	death_time;
 }	t_philo;
