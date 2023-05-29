@@ -118,7 +118,7 @@ int				init_philos(t_info *info, t_philo *philos);
 // act utils
 void			act_delay(long long int time);
 t_sim_status	check_sim_status(t_shared *shared);
-void			print_state(t_shared *shared, t_philo *philo, char *state);
+int				print_state(t_shared *shared, t_philo *philo, char *state);
 void			print_death(t_shared *shared, t_philo *philo);
 
 // act

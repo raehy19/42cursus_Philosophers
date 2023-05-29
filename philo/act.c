@@ -12,12 +12,13 @@
 
 #include "philo.h"
 
-void	act_eat(t_shared *shared, t_philo *philo)
+int	act_eat(t_shared *shared, t_philo *philo)
 {
 	pthread_mutex_lock(&(philo->death_time.lock));
 	philo->death_time.death_time = get_time() + philo->info->time_to_die;
 	pthread_mutex_unlock(&(philo->death_time.lock));
-	print_state(shared, philo, STATE_EAT);
+	if (print_state(shared, philo, STATE_EAT) < 0)
+		return (-1);
 	++philo->ate_cnt;
 	if (philo->ate_cnt
 		== philo->info->number_of_times_each_philosopher_must_eat)
@@ -34,44 +35,58 @@ void	act_eat(t_shared *shared, t_philo *philo)
 		pthread_mutex_unlock(&shared->full_philo_cnt.lock);
 	}
 	act_delay(philo->info->time_to_eat);
+	return (0);
 }
 
-void	act_take_fork_left(t_shared *shared, t_philo *philo)
+int	act_take_fork_left(t_shared *shared, t_philo *philo)
 {
 	pthread_mutex_lock(&(philo->left_fork->lock));
 	philo->left_fork->fork_status = USING;
 	print_state(shared, philo, STATE_TAKE);
 	pthread_mutex_lock(&(philo->right_fork->lock));
 	philo->right_fork->fork_status = USING;
-	print_state(shared, philo, STATE_TAKE);
-	act_eat(shared, philo);
+	if (print_state(shared, philo, STATE_TAKE) || act_eat(shared, philo))
+	{
+		pthread_mutex_unlock(&(philo->left_fork->lock));
+		pthread_mutex_unlock(&(philo->right_fork->lock));
+		return (-1);
+	}
 	philo->left_fork->fork_status = FREE;
 	pthread_mutex_unlock(&(philo->left_fork->lock));
 	philo->right_fork->fork_status = FREE;
 	pthread_mutex_unlock(&(philo->right_fork->lock));
+	return (0);
 }
 
-void	act_take_fork_right(t_shared *shared, t_philo *philo)
+int	act_take_fork_right(t_shared *shared, t_philo *philo)
 {
 	pthread_mutex_lock(&(philo->right_fork->lock));
 	philo->right_fork->fork_status = USING;
 	print_state(shared, philo, STATE_TAKE);
 	pthread_mutex_lock(&(philo->left_fork->lock));
 	philo->left_fork->fork_status = USING;
-	print_state(shared, philo, STATE_TAKE);
-	act_eat(shared, philo);
+	if (print_state(shared, philo, STATE_TAKE) || act_eat(shared, philo))
+	{
+		pthread_mutex_unlock(&(philo->right_fork->lock));
+		pthread_mutex_unlock(&(philo->left_fork->lock));
+		return (-1);
+	}
 	philo->left_fork->fork_status = FREE;
 	pthread_mutex_unlock(&(philo->left_fork->lock));
 	philo->right_fork->fork_status = FREE;
 	pthread_mutex_unlock(&(philo->right_fork->lock));
+	return (0);
 }
 
-void	act_sleep_and_think(t_shared *shared, t_philo *philo)
+int	act_sleep_and_think(t_shared *shared, t_philo *philo)
 {
-	print_state(shared, philo, STATE_SLEEP);
+	if (print_state(shared, philo, STATE_SLEEP))
+		return (-1);
 	act_delay(philo->info->time_to_sleep);
-	print_state(shared, philo, STATE_THINK);
+	if (print_state(shared, philo, STATE_THINK))
+		return (-1);
 	usleep(500);
+	return (0);
 }
 
 void	*philo_act(void *arg)
@@ -84,18 +99,20 @@ void	*philo_act(void *arg)
 	if (philo->id % 2)
 	{
 		usleep(700);
-		while (check_sim_status(&(philo->info->shared)) == ON)
+		while (1)
 		{
-			act_take_fork_left(&(philo->info->shared), philo);
-			act_sleep_and_think(&(philo->info->shared), philo);
+			if (act_take_fork_left(&(philo->info->shared), philo)
+				|| act_sleep_and_think(&(philo->info->shared), philo))
+				break ;
 		}
 	}
 	else
 	{
-		while (check_sim_status(&(philo->info->shared)) == ON)
+		while (1)
 		{
-			act_take_fork_right(&(philo->info->shared), philo);
-			act_sleep_and_think(&(philo->info->shared), philo);
+			if (act_take_fork_right(&(philo->info->shared), philo)
+				|| act_sleep_and_think(&(philo->info->shared), philo))
+				break ;
 		}
 	}
 	return (0);
