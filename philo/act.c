@@ -83,7 +83,7 @@ void	*philo_act(void *arg)
 		usleep(1000);
 	if (philo->id % 2)
 	{
-		usleep(700);
+		usleep(1300);
 		while (check_sim_status(&(philo->info->shared)) == ON)
 		{
 			act_take_fork_left(&(philo->info->shared), philo);

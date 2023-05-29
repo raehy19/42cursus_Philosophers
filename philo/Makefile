@@ -13,7 +13,7 @@
 NAME := philo
 
 CC := cc
-CFLAGS := -Wall -Wextra -Werror -MMD -MP -O2 -fsanitize=thread -g
+CFLAGS := -Wall -Wextra -Werror -MMD -MP -O3
 RM := rm -f
 
 all : $(NAME)
