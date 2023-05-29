@@ -18,8 +18,6 @@ RM := rm -f
 
 all : $(NAME)
 
-bonus : $(BONUS_NAME)
-
 SRCS := \
 	philo.c \
 	ft_putstr_fd.c \
@@ -51,4 +49,4 @@ $(NAME) : $(OBJS)
 %.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-.PHONY : all bonus clean fclean re $(NAME)
+.PHONY : all clean fclean re

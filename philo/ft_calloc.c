@@ -22,18 +22,3 @@ void	*ft_calloc(size_t count, size_t size)
 		return (NULL);
 	return (memset(p, 0, count * size));
 }
-
-# define STATE_TAKE		"has taken a fork\n"
-# define STATE_EAT		"is eating\n"
-# define STATE_SLEEP	"is sleeping\n"
-# define STATE_THINK	"is thinking\n"
-# define STATE_DIED		"died\n"
-
-typedef enum e_lock
-{
-	UNLOCKED = 0,
-	LOCKED = 1
-}	t_lock;
-
-
-int		ft_atoi(const char *str);
