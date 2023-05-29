@@ -61,7 +61,8 @@ int	simulate(t_info	*info, t_philo *philos)
 	i = -1;
 	while (++i < info->number_of_philosophers)
 	{
-		if (pthread_create(&philos->thread_id, NULL, philo_act, (philos + i)))
+		if (pthread_create(&(philos + i)->thread_id,
+				NULL, philo_act, (philos + i)))
 			return (ERR_THREAD_CREATE);
 	}
 	monitor(&info->shared, philos);

@@ -23,7 +23,7 @@ void	act_eat(t_shared *shared, t_philo *philo)
 		== philo->info->number_of_times_each_philosopher_must_eat)
 	{
 		pthread_mutex_lock(&(shared->full_philo_cnt.lock));
-		++(shared->full_philo_cnt.full_philo_cnt);
+		++shared->full_philo_cnt.full_philo_cnt;
 		if (shared->full_philo_cnt.full_philo_cnt
 			== philo->info->number_of_philosophers)
 		{
