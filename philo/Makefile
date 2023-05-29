@@ -20,9 +20,11 @@ all : $(NAME)
 
 SRCS := \
 	philo.c \
-	parse.c \
+	utils.c \
 	init.c \
 	time.c \
+	act.c \
+	act_utils.c \
 	ft_putstr_fd.c \
 	ft_atoi.c \
 	ft_calloc.c \

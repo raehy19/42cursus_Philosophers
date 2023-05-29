@@ -6,7 +6,7 @@
 /*   By: rjeong <rjeong@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/29 09:45:51 by rjeong            #+#    #+#             */
-/*   Updated: 2023/05/29 09:46:06 by rjeong           ###   ########.fr       */
+/*   Updated: 2023/05/29 10:30:40 by rjeong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,8 @@ int	init_philos(t_info *info, t_philo *philos)
 		(philos + i)->left_fork_id = i + 1;
 		(philos + i)->right_fork_id = i;
 		(philos + i)->ate_cnt = 0;
-		(philos + i)->death_time.death_time = info->start_time + info->time_to_die;
+		(philos + i)->death_time.death_time
+			= info->start_time + info->time_to_die;
 		if (pthread_mutex_init(&(philos + i)->death_time.lock, NULL))
 			return (ERR_MUTEX_INIT);
 		++i;

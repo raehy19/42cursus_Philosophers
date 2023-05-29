@@ -6,171 +6,28 @@
 /*   By: rjeong <rjeong@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/04 02:55:46 by rjeong            #+#    #+#             */
-/*   Updated: 2023/03/04 02:55:48 by rjeong           ###   ########.fr       */
+/*   Updated: 2023/05/29 10:38:46 by rjeong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	destroy_n_free(t_info *info, t_philo *philos, int exit_code)
+void	found_dead(t_shared *shared, t_philo *philo)
 {
-	int	i;
-
-	if (info->shared.forks)
+	pthread_mutex_lock(&(shared->sim.lock));
+	if (shared->sim.sim_status == OFF)
 	{
-		i = -1;
-		while (++i < info->number_of_philosophers)
-			pthread_mutex_destroy(&(info->shared.forks + i)->lock);
+		pthread_mutex_unlock(&(shared->sim.lock));
+		pthread_mutex_unlock(&(philo)->death_time.lock);
+		return ;
 	}
-	free(info->shared.forks);
-	pthread_mutex_destroy(&info->shared.sim.lock);
-	pthread_mutex_destroy(&info->shared.full_philo_cnt.lock);
-	pthread_mutex_destroy(&info->shared.print_lock);
-	if (philos)
-	{
-		i = -1;
-		while (++i < info->number_of_philosophers)
-			pthread_mutex_destroy(&(philos + i)->death_time.lock);
-		pthread_join((philos + i)->thread_id, NULL);
-	}
-	free(philos);
-	return (exit_code);
-}
-
-void	print_death(t_shared *shared, t_philo *philo)
-{
+	shared->sim.sim_status = OFF;
 	pthread_mutex_lock(&shared->print_lock);
 	printf("%lld\t\t%d %s",
-		   get_timestamp(philo->info->start_time), philo->id, STATE_DIED);
-	pthread_mutex_unlock(&shared->print_lock);
-}
-
-void	print_state(t_shared *shared, t_philo *philo, char *state)
-{
-	pthread_mutex_lock(&shared->sim.lock);
-	if (shared->sim.sim_status == ON)
-	{
-		if(get_time() > philo->death_time.death_time)
-		{
-			print_death(shared, philo);
-			shared->sim.sim_status = OFF;
-			pthread_mutex_unlock(&shared->sim.lock);
-			return ;
-		}
-		pthread_mutex_lock(&shared->print_lock);
-		printf("%lld\t\t%d %s",
-			get_timestamp(philo->info->start_time), philo->id, state);
-		pthread_mutex_unlock(&shared->print_lock);
-	}
-	pthread_mutex_unlock(&shared->sim.lock);
-}
-
-void	act_delay(long long int	time)
-{
-	long long int	temp;
-
-	temp = get_time();
-	while (get_time() - temp < time)
-		usleep(1000);
-}
-
-void	act_eat(t_shared *shared, t_philo *philo)
-{
-	pthread_mutex_lock(&philo->death_time.lock);
-	philo->death_time.death_time = get_time() + philo->info->time_to_die;
-	pthread_mutex_unlock(&philo->death_time.lock);
-	print_state(shared, philo, STATE_EAT);
-	++philo->ate_cnt;
-	if (philo->ate_cnt
-		== philo->info->number_of_times_each_philosopher_must_eat)
-	{
-		pthread_mutex_lock(&shared->full_philo_cnt.lock);
-		++shared->full_philo_cnt.full_philo_cnt;
-		if (shared->full_philo_cnt.full_philo_cnt
-			== philo->info->number_of_philosophers)
-		{
-			pthread_mutex_lock(&(shared->sim.lock));
-			shared->sim.sim_status = OFF;
-			pthread_mutex_unlock(&(shared->sim.lock));
-		}
-		pthread_mutex_unlock(&shared->full_philo_cnt.lock);
-	}
-	act_delay(philo->info->time_to_eat);
-}
-
-
-void	act_take_fork_left(t_shared *shared, t_philo *philo)
-{
-	pthread_mutex_lock(&(shared->forks + philo->left_fork_id)->lock);
-	(shared->forks + philo->left_fork_id)->fork_status = USING;
-	print_state(shared, philo, STATE_TAKE);
-	pthread_mutex_lock(&(shared->forks + philo->right_fork_id)->lock);
-	(shared->forks + philo->right_fork_id)->fork_status = USING;
-	print_state(shared, philo, STATE_TAKE);
-	act_eat(shared, philo);
-	(shared->forks + philo->right_fork_id)->fork_status = FREE;
-	pthread_mutex_unlock(&(shared->forks + philo->right_fork_id)->lock);
-	(shared->forks + philo->left_fork_id)->fork_status = FREE;
-	pthread_mutex_unlock(&(shared->forks + philo->left_fork_id)->lock);
-}
-
-
-void	act_take_fork_right(t_shared *shared, t_philo *philo)
-{
-	pthread_mutex_lock(&(shared->forks + philo->right_fork_id)->lock);
-	(shared->forks + philo->right_fork_id)->fork_status = USING;
-	print_state(shared, philo, STATE_TAKE);
-	pthread_mutex_lock(&(shared->forks + philo->left_fork_id)->lock);
-	(shared->forks + philo->left_fork_id)->fork_status = USING;
-	print_state(shared, philo, STATE_TAKE);
-	act_eat(shared, philo);
-	(shared->forks + philo->left_fork_id)->fork_status = FREE;
-	pthread_mutex_unlock(&(shared->forks + philo->left_fork_id)->lock);
-	(shared->forks + philo->right_fork_id)->fork_status = FREE;
-	pthread_mutex_unlock(&(shared->forks + philo->right_fork_id)->lock);
-}
-
-void	act_sleep_and_think(t_shared *shared, t_philo *philo)
-{
-	print_state(shared, philo, STATE_SLEEP);
-	act_delay(philo->info->time_to_sleep);
-	print_state(shared, philo, STATE_THINK);
-	usleep(500);
-}
-
-t_sim_status	check_sim_status(t_shared *shared)
-{
-	t_sim_status	status;
-	pthread_mutex_lock(&(shared->sim.lock));
-	status = shared->sim.sim_status;
+		get_timestamp(philo->info->start_time), philo->id, STATE_DIED);
 	pthread_mutex_unlock(&(shared->sim.lock));
-	return (status);
-}
-void	*philo_act(void *arg)
-{
-	t_philo	*philo;
-
-	philo = (t_philo *)arg;
-	while (get_time() < philo->info->start_time)
-		usleep(1000);
-	if (philo->id % 2)
-	{
-		usleep(700);
-		while (1)
-		{
-			act_take_fork_left(&(philo->info->shared), philo);
-			act_sleep_and_think(&(philo->info->shared), philo);
-		}
-	}
-	else
-	{
-		while (1)
-		{
-			act_take_fork_right(&(philo->info->shared), philo);
-			act_sleep_and_think(&(philo->info->shared), philo);
-		}
-	}
-	return (0);
+	pthread_mutex_unlock(&shared->print_lock);
+	pthread_mutex_unlock(&(philo)->death_time.lock);
 }
 
 void	monitor(t_shared *shared, t_philo *philos)
@@ -185,20 +42,7 @@ void	monitor(t_shared *shared, t_philo *philos)
 		pthread_mutex_lock(&(philos + i)->death_time.lock);
 		if (get_time() > (philos + i)->death_time.death_time)
 		{
-			pthread_mutex_lock(&(shared->sim.lock));
-			if (shared->sim.sim_status == OFF)
-			{
-				pthread_mutex_unlock(&(shared->sim.lock));
-				pthread_mutex_unlock(&(philos + i)->death_time.lock);
-				break;
-			}
-			shared->sim.sim_status = OFF;
-			pthread_mutex_lock(&shared->print_lock);
-			printf("%lld\t\t%d %s",
-				   get_timestamp(philos->info->start_time), i + 1, STATE_DIED);
-			pthread_mutex_unlock(&(shared->sim.lock));
-			pthread_mutex_unlock(&shared->print_lock);
-			pthread_mutex_unlock(&(philos + i)->death_time.lock);
+			found_dead(shared, (philos + i));
 			break ;
 		}
 		pthread_mutex_unlock(&(philos + i)->death_time.lock);
@@ -220,7 +64,6 @@ int	simulate(t_info	*info, t_philo *philos)
 		if (pthread_create(&philos->thread_id, NULL, philo_act, (philos + i)))
 			return (ERR_THREAD_CREATE);
 	}
-
 	monitor(&info->shared, philos);
 	return (0);
 }

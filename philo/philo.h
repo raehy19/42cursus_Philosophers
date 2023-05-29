@@ -6,7 +6,7 @@
 /*   By: rjeong <rjeong@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 19:42:14 by rjeong            #+#    #+#             */
-/*   Updated: 2023/05/17 19:42:18 by rjeong           ###   ########.fr       */
+/*   Updated: 2023/05/29 10:39:05 by rjeong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@
 # define ERR_MALLOC			6
 # define ERR_MUTEX_INIT		7
 # define ERR_THREAD_CREATE	8
-
 
 # define STATE_TAKE		"has taken a fork\n"
 # define STATE_EAT		"is eating\n"
@@ -108,12 +107,21 @@ long long int	get_time(void);
 long long int	get_timestamp(long long int start_time);
 
 // parse
-int				ft_arg_err(void);
 int				ft_check_arg(int argc, t_info *info);
+int				ft_arg_err(void);
+int				destroy_n_free(t_info *info, t_philo *philos, int exit_code);
 
 // init
 int				init_info(t_info *info);
 int				init_philos(t_info *info, t_philo *philos);
 
+// act utils
+void			act_delay(long long int time);
+t_sim_status	check_sim_status(t_shared *shared);
+void			print_state(t_shared *shared, t_philo *philo, char *state);
+void			print_death(t_shared *shared, t_philo *philo);
+
+// act
+void			*philo_act(void *arg);
 
 #endif

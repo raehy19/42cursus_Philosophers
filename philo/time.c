@@ -6,11 +6,11 @@
 /*   By: rjeong <rjeong@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 18:27:22 by rjeong            #+#    #+#             */
-/*   Updated: 2023/05/29 05:50:22 by rjeong           ###   ########.fr       */
+/*   Updated: 2023/05/29 10:29:52 by rjeong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include <sys/time.h>
+#include <sys/time.h>
 
 long long int	get_time(void)
 {
