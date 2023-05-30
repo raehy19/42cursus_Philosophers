@@ -15,13 +15,13 @@
 void	found_dead(t_shared *shared, t_philo *philo)
 {
 	pthread_mutex_lock(&(shared->sim.lock));
-	if (shared->sim.sim_status == OFF)
+	if (shared->sim.sim_status == sim_off)
 	{
 		pthread_mutex_unlock(&(shared->sim.lock));
 		pthread_mutex_unlock(&(philo)->death_time.lock);
 		return ;
 	}
-	shared->sim.sim_status = OFF;
+	shared->sim.sim_status = sim_off;
 	pthread_mutex_lock(&shared->print_lock);
 	printf("%lld\t\t%d %s",
 		get_timestamp(philo->info->start_time), philo->id, STATE_DIED);
@@ -37,7 +37,7 @@ void	monitor(t_shared *shared, t_philo *philos)
 	i = 0;
 	while (1)
 	{
-		if (check_sim_status(shared) == OFF)
+		if (check_sim_status(shared) == sim_off)
 			break ;
 		pthread_mutex_lock(&(philos + i)->death_time.lock);
 		if (get_time() > (philos + i)->death_time.death_time)
@@ -49,6 +49,7 @@ void	monitor(t_shared *shared, t_philo *philos)
 		++i;
 		if (i == philos->info->number_of_philosophers)
 			i = 0;
+		usleep(100);
 	}
 }
 

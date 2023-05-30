@@ -18,7 +18,7 @@ void	act_delay(long long int time)
 
 	temp = get_time();
 	while (get_time() - temp < time)
-		usleep(1000);
+		usleep(100);
 }
 
 t_sim_status	check_sim_status(t_shared *shared)
@@ -34,13 +34,13 @@ t_sim_status	check_sim_status(t_shared *shared)
 void	print_state(t_shared *shared, t_philo *philo, char *state)
 {
 	pthread_mutex_lock(&shared->sim.lock);
-	if (shared->sim.sim_status == ON)
+	if (shared->sim.sim_status == sim_on)
 	{
 		pthread_mutex_lock(&(philo->death_time.lock));
 		if (get_time() > philo->death_time.death_time)
 		{
 			print_death(shared, philo);
-			shared->sim.sim_status = OFF;
+			shared->sim.sim_status = sim_off;
 			pthread_mutex_unlock(&shared->sim.lock);
 			pthread_mutex_unlock(&(philo->death_time.lock));
 			return ;

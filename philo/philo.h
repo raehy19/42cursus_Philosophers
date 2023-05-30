@@ -19,7 +19,7 @@
 # include <string.h>
 # include <pthread.h>
 
-# define START_DELAY		500
+# define START_DELAY		1000
 
 # define ERR_ARG			4
 # define ERR_INIT			5
@@ -35,8 +35,8 @@
 
 typedef enum e_fork_status
 {
-	FREE,
-	USING
+	free_fork,
+	use_fork
 }	t_fork_status;
 
 typedef struct s_fork
@@ -47,8 +47,8 @@ typedef struct s_fork
 
 typedef enum e_sim_status
 {
-	ON,
-	OFF
+	sim_on,
+	sim_off
 }	t_sim_status;
 
 typedef struct s_sim

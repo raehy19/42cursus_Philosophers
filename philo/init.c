@@ -16,17 +16,18 @@ int	init_info(t_info *info)
 {
 	int		i;
 
-	info->shared.forks = calloc(info->number_of_philosophers, sizeof(t_fork));
+	info->shared.forks
+		= ft_calloc(info->number_of_philosophers, sizeof(t_fork));
 	if (!info->shared.forks)
 		return (ERR_MALLOC);
 	i = -1;
 	while (++i < info->number_of_philosophers)
 	{
-		(info->shared.forks + i)->fork_status = FREE;
+		(info->shared.forks + i)->fork_status = free_fork;
 		if (pthread_mutex_init(&(info->shared.forks + i)->lock, NULL))
 			return (ERR_MUTEX_INIT);
 	}
-	info->shared.sim.sim_status = ON;
+	info->shared.sim.sim_status = sim_on;
 	info->shared.full_philo_cnt.full_philo_cnt = 0;
 	if (pthread_mutex_init(&(info->shared.sim.lock), NULL)
 		|| pthread_mutex_init(&(info->shared.full_philo_cnt.lock), NULL)
