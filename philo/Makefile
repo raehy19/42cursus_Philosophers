@@ -24,6 +24,7 @@ SRCS := \
 	init.c \
 	time.c \
 	act.c \
+	act_only_one.c \
 	act_utils.c \
 	ft_putstr_fd.c \
 	ft_atoi.c \

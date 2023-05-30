@@ -59,14 +59,23 @@ int	simulate(t_info	*info, t_philo *philos)
 
 	if (init_info(info) || init_philos(info, philos))
 		return (destroy_n_free(info, philos, ERR_INIT));
-	i = -1;
-	while (++i < info->number_of_philosophers)
+	if (info->number_of_philosophers == 1)
 	{
-		if (pthread_create(&(philos + i)->thread_id,
-				NULL, philo_act, (philos + i)))
+		if (pthread_create(&(philos)->thread_id, NULL, philo_act_one, (philos)))
 			return (ERR_THREAD_CREATE);
+		monitor(&info->shared, philos);
 	}
-	monitor(&info->shared, philos);
+	else
+	{
+		i = -1;
+		while (++i < info->number_of_philosophers)
+		{
+			if (pthread_create(&(philos + i)->thread_id,
+					NULL, philo_act, (philos + i)))
+				return (ERR_THREAD_CREATE);
+		}
+		monitor(&info->shared, philos);
+	}
 	return (0);
 }
 

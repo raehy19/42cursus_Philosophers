@@ -123,5 +123,5 @@ void			print_death(t_shared *shared, t_philo *philo);
 
 // act
 void			*philo_act(void *arg);
-
+void			*philo_act_one(void *arg);
 #endif
