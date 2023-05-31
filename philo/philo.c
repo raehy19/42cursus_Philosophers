@@ -53,10 +53,36 @@ void	monitor(t_shared *shared, t_philo *philos)
 	}
 }
 
-int	simulate(t_info	*info, t_philo *philos)
+int	start_sim(t_info *info, t_philo *philos)
 {
 	int		i;
 
+	i = -1;
+	if (info->number_of_philosophers % 2)
+	{
+		while (++i < info->number_of_philosophers)
+		{
+			if (pthread_create(&(philos + i)->thread_id,
+					NULL, philo_act_odd, (philos + i)))
+				return (ERR_THREAD_CREATE);
+		}
+		monitor(&info->shared, philos);
+	}
+	else
+	{
+		while (++i < info->number_of_philosophers)
+		{
+			if (pthread_create(&(philos + i)->thread_id,
+					NULL, philo_act_even, (philos + i)))
+				return (ERR_THREAD_CREATE);
+		}
+		monitor(&info->shared, philos);
+	}
+	return (0);
+}
+
+int	simulate(t_info	*info, t_philo *philos)
+{
 	if (init_info(info) || init_philos(info, philos))
 		return (destroy_n_free(info, philos, ERR_INIT));
 	if (info->number_of_philosophers == 1)
@@ -67,14 +93,8 @@ int	simulate(t_info	*info, t_philo *philos)
 	}
 	else
 	{
-		i = -1;
-		while (++i < info->number_of_philosophers)
-		{
-			if (pthread_create(&(philos + i)->thread_id,
-					NULL, philo_act, (philos + i)))
-				return (ERR_THREAD_CREATE);
-		}
-		monitor(&info->shared, philos);
+		if (start_sim(info, philos))
+			return (ERR_THREAD_CREATE);
 	}
 	return (0);
 }

@@ -122,6 +122,7 @@ void			print_state(t_shared *shared, t_philo *philo, char *state);
 void			print_death(t_shared *shared, t_philo *philo);
 
 // act
-void			*philo_act(void *arg);
+void			*philo_act_odd(void *arg);
+void			*philo_act_even(void *arg);
 void			*philo_act_one(void *arg);
 #endif

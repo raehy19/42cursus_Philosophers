@@ -18,7 +18,7 @@ void	act_delay(long long int time)
 
 	temp = get_time();
 	while (get_time() - temp < time)
-		usleep(100);
+		usleep(200);
 }
 
 t_sim_status	check_sim_status(t_shared *shared)
