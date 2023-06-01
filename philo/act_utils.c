@@ -61,3 +61,21 @@ void	print_death(t_shared *shared, t_philo *philo)
 		get_timestamp(philo->info->start_time), philo->id, STATE_DIED);
 	pthread_mutex_unlock(&shared->print_lock);
 }
+
+void	found_dead(t_shared *shared, t_philo *philo)
+{
+	pthread_mutex_lock(&(shared->sim.lock));
+	if (shared->sim.sim_status == sim_off)
+	{
+		pthread_mutex_unlock(&(shared->sim.lock));
+		pthread_mutex_unlock(&(philo)->death_time.lock);
+		return ;
+	}
+	shared->sim.sim_status = sim_off;
+	pthread_mutex_lock(&shared->print_lock);
+	printf("%lld\t\t%d %s",
+		get_timestamp(philo->info->start_time), philo->id, STATE_DIED);
+	pthread_mutex_unlock(&(shared->sim.lock));
+	pthread_mutex_unlock(&shared->print_lock);
+	pthread_mutex_unlock(&(philo)->death_time.lock);
+}

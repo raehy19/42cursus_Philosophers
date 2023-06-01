@@ -13,19 +13,20 @@
 NAME := philo
 
 CC := cc
-CFLAGS := -Wall -Wextra -Werror -MMD -MP -O3
+CFLAGS := -Wall -Wextra -Werror -MMD -MP -O3 -fsanitize=thread -g
 RM := rm -f
 
 all : $(NAME)
 
 SRCS := \
 	philo.c \
-	utils.c \
 	init.c \
+	routine.c \
 	time.c \
 	act.c \
-	act_only_one.c \
 	act_utils.c \
+	utils.c \
+	time.c \
 	ft_putstr_fd.c \
 	ft_atoi.c \
 	ft_calloc.c \

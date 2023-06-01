@@ -12,24 +12,6 @@
 
 #include "philo.h"
 
-void	found_dead(t_shared *shared, t_philo *philo)
-{
-	pthread_mutex_lock(&(shared->sim.lock));
-	if (shared->sim.sim_status == sim_off)
-	{
-		pthread_mutex_unlock(&(shared->sim.lock));
-		pthread_mutex_unlock(&(philo)->death_time.lock);
-		return ;
-	}
-	shared->sim.sim_status = sim_off;
-	pthread_mutex_lock(&shared->print_lock);
-	printf("%lld\t\t%d %s",
-		get_timestamp(philo->info->start_time), philo->id, STATE_DIED);
-	pthread_mutex_unlock(&(shared->sim.lock));
-	pthread_mutex_unlock(&shared->print_lock);
-	pthread_mutex_unlock(&(philo)->death_time.lock);
-}
-
 void	monitor(t_shared *shared, t_philo *philos)
 {
 	int		i;
@@ -63,7 +45,7 @@ int	start_sim(t_info *info, t_philo *philos)
 		while (++i < info->number_of_philosophers)
 		{
 			if (pthread_create(&(philos + i)->thread_id,
-					NULL, philo_act_odd, (philos + i)))
+					NULL, routine_odd, (philos + i)))
 				return (ERR_THREAD_CREATE);
 		}
 		monitor(&info->shared, philos);
@@ -73,7 +55,7 @@ int	start_sim(t_info *info, t_philo *philos)
 		while (++i < info->number_of_philosophers)
 		{
 			if (pthread_create(&(philos + i)->thread_id,
-					NULL, philo_act_even, (philos + i)))
+					NULL, routine_even, (philos + i)))
 				return (ERR_THREAD_CREATE);
 		}
 		monitor(&info->shared, philos);
@@ -87,7 +69,7 @@ int	simulate(t_info	*info, t_philo *philos)
 		return (destroy_n_free(info, philos, ERR_INIT));
 	if (info->number_of_philosophers == 1)
 	{
-		if (pthread_create(&(philos)->thread_id, NULL, philo_act_one, (philos)))
+		if (pthread_create(&(philos)->thread_id, NULL, routine_one, philos))
 			return (ERR_THREAD_CREATE);
 		monitor(&info->shared, philos);
 	}

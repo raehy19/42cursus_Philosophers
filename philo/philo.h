@@ -99,30 +99,35 @@ typedef struct s_philo
 	t_death_time	death_time;
 }	t_philo;
 
-// utils
-int				ft_atoi(const char *str);
-void			*ft_calloc(size_t count, size_t size);
-void			ft_putstr_fd(char *s, int fd);
-long long int	get_time(void);
-long long int	get_timestamp(long long int start_time);
-
-// parse
-int				ft_check_arg(int argc, t_info *info);
-int				ft_arg_err(void);
-int				destroy_n_free(t_info *info, t_philo *philos, int exit_code);
-
-// init
 int				init_info(t_info *info);
 int				init_philos(t_info *info, t_philo *philos);
 
-// act utils
+void			*routine_odd(void *arg);
+void			*routine_even(void *arg);
+void			*routine_one(void *arg);
+
+void			act_take_fork_left(t_shared *shared, t_philo *philo);
+void			act_take_fork_right(t_shared *shared, t_philo *philo);
+void			act_eat(t_shared *shared, t_philo *philo);
+void			act_sleep_and_think(t_shared *shared, t_philo *philo);
+
 void			act_delay(long long int time);
 t_sim_status	check_sim_status(t_shared *shared);
 void			print_state(t_shared *shared, t_philo *philo, char *state);
 void			print_death(t_shared *shared, t_philo *philo);
+void			found_dead(t_shared *shared, t_philo *philo);
 
-// act
-void			*philo_act_odd(void *arg);
-void			*philo_act_even(void *arg);
-void			*philo_act_one(void *arg);
+int				ft_check_arg(int argc, t_info *info);
+int				ft_arg_err(void);
+int				destroy_n_free(t_info *info, t_philo *philos, int exit_code);
+
+int				ft_atoi(const char *str);
+
+void			*ft_calloc(size_t count, size_t size);
+
+void			ft_putstr_fd(char *s, int fd);
+
+long long int	get_time(void);
+long long int	get_timestamp(long long int start_time);
+
 #endif
