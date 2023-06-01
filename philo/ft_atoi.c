@@ -26,7 +26,7 @@ int	ft_isspace(int c)
 	return (0);
 }
 
-int	ft_cal_sign(const char *str, int *i)
+int	ft_cal_sign(const char *str, unsigned int *i)
 {
 	int	sign;
 
@@ -43,7 +43,7 @@ int	ft_cal_sign(const char *str, int *i)
 
 int	ft_atoi(const char *str)
 {
-	int					i;
+	unsigned int		i;
 	int					sign;
 	unsigned long long	result;
 	unsigned long long	temp_result;
@@ -62,5 +62,7 @@ int	ft_atoi(const char *str)
 		result = temp_result;
 		++i;
 	}
+	if (*(str + i))
+		return (-1);
 	return ((int)(result * sign));
 }
