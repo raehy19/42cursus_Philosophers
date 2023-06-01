@@ -12,22 +12,30 @@
 
 #include "philo.h"
 
+int	ft_arg_cnt_err(void)
+{
+	ft_putstr_fd("Please Check the Number of Program Arguments\n",
+		STDERR_FILENO);
+	return (ERR_ARG_VAL);
+}
+
+int	ft_arg_val_err(void)
+{
+	ft_putstr_fd("Please Check the Value of Program Arguments\n",
+		STDERR_FILENO);
+	return (ERR_ARG_CNT);
+}
+
 int	ft_check_arg(int argc, t_info *info)
 {
 	if (info->number_of_philosophers < 1
 		|| info->time_to_die < 0
-		|| info->time_to_eat < 0
-		|| info->time_to_sleep < 0
+		|| info->time_to_eat < 1
+		|| info->time_to_sleep < 1
 		|| ((argc == 6)
 			&& (info->number_of_times_each_philosopher_must_eat < 1)))
-		return (ERR_ARG);
+		return (ERR_ARG_CNT);
 	return (0);
-}
-
-int	ft_arg_err(void)
-{
-	ft_putstr_fd("Please Check Program Arguments\n", STDERR_FILENO);
-	return (ERR_ARG);
 }
 
 int	destroy_n_free(t_info *info, t_philo *philos, int exit_code)

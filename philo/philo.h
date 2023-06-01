@@ -21,17 +21,18 @@
 
 # define START_DELAY		1000
 
-# define ERR_ARG			4
-# define ERR_INIT			5
-# define ERR_MALLOC			6
-# define ERR_MUTEX_INIT		7
-# define ERR_THREAD_CREATE	8
+# define ERR_ARG_CNT		4
+# define ERR_ARG_VAL		5
+# define ERR_INIT			6
+# define ERR_MALLOC			7
+# define ERR_MUTEX_INIT		8
+# define ERR_THREAD_CREATE	9
 
-# define STATE_TAKE		"has taken a fork\n"
-# define STATE_EAT		"is eating\n"
-# define STATE_SLEEP	"is sleeping\n"
-# define STATE_THINK	"is thinking\n"
-# define STATE_DIED		"died\n"
+# define STATE_TAKE			"has taken a fork\n"
+# define STATE_EAT			"is eating\n"
+# define STATE_SLEEP		"is sleeping\n"
+# define STATE_THINK		"is thinking\n"
+# define STATE_DIED			"died\n"
 
 typedef enum e_fork_status
 {
@@ -118,7 +119,8 @@ void			print_death(t_shared *shared, t_philo *philo);
 void			found_dead(t_shared *shared, t_philo *philo);
 
 int				ft_check_arg(int argc, t_info *info);
-int				ft_arg_err(void);
+int				ft_arg_cnt_err(void);
+int				ft_arg_val_err(void);
 int				destroy_n_free(t_info *info, t_philo *philos, int exit_code);
 
 int				ft_atoi(const char *str);
