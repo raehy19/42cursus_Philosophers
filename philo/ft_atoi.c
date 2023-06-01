@@ -57,7 +57,8 @@ int	ft_atoi(const char *str)
 	{
 		temp_result = result * 10 + (unsigned long long)(*(str + i) - '0');
 		if (temp_result < result
-			|| (temp_result > LONG_MAX && sign > 0))
+			|| (sign > 0 && temp_result > 2147483647)
+			|| (sign < 0 && temp_result > 2147483648))
 			return (-1);
 		result = temp_result;
 		++i;
