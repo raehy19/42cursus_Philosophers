@@ -37,7 +37,7 @@ void	print_state(t_shared *shared, t_philo *philo, char *state)
 	if (shared->sim.sim_status == sim_on)
 	{
 		pthread_mutex_lock(&(philo->death_time.lock));
-		if (get_time() > philo->death_time.death_time)
+		if (get_time() >= philo->death_time.death_time)
 		{
 			print_death(shared, philo);
 			shared->sim.sim_status = sim_off;

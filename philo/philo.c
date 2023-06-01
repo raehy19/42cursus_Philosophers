@@ -40,7 +40,7 @@ void	monitor(t_shared *shared, t_philo *philos)
 		if (check_sim_status(shared) == sim_off)
 			break ;
 		pthread_mutex_lock(&(philos + i)->death_time.lock);
-		if (get_time() > (philos + i)->death_time.death_time)
+		if (get_time() >= (philos + i)->death_time.death_time)
 		{
 			found_dead(shared, (philos + i));
 			break ;
