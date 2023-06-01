@@ -39,8 +39,8 @@ int	destroy_n_free(t_info *info, t_philo *philos, int exit_code)
 		i = -1;
 		while (++i < info->number_of_philosophers)
 		{
-			printf("%dth philo pthread_join return : \t\t%d\n", i + 1, pthread_join((philos[i]).thread_id, NULL));
-			printf("%dth philo death time mutex destroy return : \t%d\n", i + 1, pthread_mutex_destroy(&(philos + i)->death_time.lock));
+			pthread_join((philos[i]).thread_id, NULL);
+			pthread_mutex_destroy(&(philos + i)->death_time.lock);
 		}
 	}
 	free(philos);
@@ -48,11 +48,11 @@ int	destroy_n_free(t_info *info, t_philo *philos, int exit_code)
 	{
 		i = -1;
 		while (++i < info->number_of_philosophers)
-			printf("%dth fork mutex destroy : \t\t\t%d\n", i + 1, pthread_mutex_destroy(&(info->shared.forks + i)->lock));
+			pthread_mutex_destroy(&(info->shared.forks + i)->lock);
 	}
 	free(info->shared.forks);
-	printf("sim mutex destroy : \t\t\t\t%d\n", pthread_mutex_destroy(&info->shared.sim.lock));
-	printf("full philo count mutex destroy : \t\t%d\n", pthread_mutex_destroy(&info->shared.full_philo_cnt.lock));
-	printf("print lock mutex destroy : \t\t\t%d\n", pthread_mutex_destroy(&info->shared.print_lock));
+	pthread_mutex_destroy(&info->shared.sim.lock);
+	pthread_mutex_destroy(&info->shared.full_philo_cnt.lock);
+	pthread_mutex_destroy(&info->shared.print_lock);
 	return (exit_code);
 }
